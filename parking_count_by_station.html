@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>hello.html</title>
+
+<link rel="stylesheet" href="https://rmap.ekispert.jp/production/rosen.css" />
+<script src="https://rmap.ekispert.jp/production/rosen.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="station_code_list.js"></script>
+<script src="parking_count_by_station.js"></script>
+
+<style>
+
+  html, body { width: 100%; height: 100%; }
+  #map { width: 100%; height: 100%; }
+
+</style>
+
+<script type="text/javascript">
+
+var rosen;
+
+function init() {
+  rosen = new Rosen("map", {            // "map"は<div>のidと一致させる
+    apiKey: "6ygqqvuz93eq59gefaydeqew", // アクセスキーはサンプル用です。実際にご利用されるときは書き換えてください。
+    // apiSetting: "https",                // HTTPS版のAPIサーバを指定
+    // tileSetting: "https",                // HTTPS版のタイルサーバを指定
+    // consoleViewControl: true,
+    zoom: 14,
+    center: [7473, 6177, 14]
+  });
+
+  rosen.getStationsByCode(stationCodeList).then(function(stations) {
+    stations.forEach(function(station) {
+      var radius = 2 * parkingCountByStation[station.code + ''];
+      rosen.setStationMarker(station.code, {
+          type: "circle",
+          radius: radius,
+          color: "#0000ff",
+          opacity: 0.3
+        }).then(function(marker) {
+        var popup = Rosen.htmlPopup();
+        popup.setContent("<span>" + station.name + "駅には、隣接した駐輪場が" + parkingCountByStation[station.code + ''] + "個あります。</span>");
+        marker.bindPopup(popup);
+      })
+    });
+  });
+}
+
+window.addEventListener('load', init);
+
+</script>
+</head>
+<body>
+  <div id="map"></div>
+</body>
+</html>

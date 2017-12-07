@@ -10,7 +10,7 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="station_code_list.js"></script>
-<script src="parking_count_by_station.js"></script>
+<script src="capacity_by_station.js"></script>
 
 <style>
 
@@ -35,8 +35,17 @@ function init() {
 
   rosen.getStationsByCode(stationCodeList).then(function(stations) {
     stations.forEach(function(station) {
-      var radius = 2 * parkingCountByStation[station.code + ''];
-      rosen.setStationMarker(station.code, {type: "circle", radius: radius, color: "#0000ff", opacity: 0.3});
+      var radius = capacityByStation[station.code + ''] / 200;
+      rosen.setStationMarker(station.code, {
+          type: "circle",
+          radius: radius,
+          color: "#008a00",
+          opacity: 0.3
+        }).then(function(marker) {
+          var popup = Rosen.htmlPopup();
+          popup.setContent("<span>" + station.name + "駅付近は、計" + capacityByStation[station.code + ''] + "台の自転車・バイクを収容できます。</span>");
+          marker.bindPopup(popup);
+      })
     });
   });
 }
